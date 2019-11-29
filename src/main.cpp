@@ -42,13 +42,13 @@ int toggleLeds(String command)
 	return 1;
 }
 
-RgbColor RgbColorF(float r, float g, float b)
-{
-	return RgbColor(r*colorSaturation, g*colorSaturation, b*colorSaturation);
-}
+// RgbColor RgbColorF(float r, float g, float b)
+// {
+// 	return RgbColor(r*colorSaturation, g*colorSaturation, b*colorSaturation);
+// }
 
-RunningAverage myRA(10);
-float averageCycleDelay = 0;
+//RunningAverage myRA(10);
+//float averageCycleDelay = 0;
 
 void setup()
 {
@@ -84,18 +84,10 @@ void setup()
 
     // this resets all the neopixels to an off state
     strip.Begin();
-    strip.ClearTo(RgbColorF(0,0,0));
+    strip.ClearTo(RgbColor(0));
     strip.Show();
 }
 
-float currentTime = 0;
-float delta;
-void updateTimers()
-{
-	float time = (float)millis() / 1000.0f;
-    delta = time - currentTime;
-    currentTime = time;
-}
 
 
 int updateVarDelay = 50;
@@ -120,8 +112,7 @@ int heartLiteMin = 'C';
 int heartLiteMax = 'A'+9;
 bool hearLiteInc = true;
 unsigned long lastTick = 0;
-int cPanel = 0;
-
+int cPanel=0;
 void loop()
 {
  	// strip.SetPixelColor(mosaic.Map(left, top), white);
@@ -130,10 +121,8 @@ void loop()
  	// strip.SetPixelColor(mosaic.Map(left, bottom), blue);
 	unsigned int read = 0;
 	short x = 0;
-	short y=0;
-	const float min = 'A';
-	const float max = 'U';
-	
+	short y = 0;
+
 	while (read < heart_txt_len)
 	{
 		// Skip windows linefeed
@@ -148,29 +137,27 @@ void loop()
 			++read;
 			continue;
 		}
-
-		
 		unsigned char cVal = heart_txt[read];
-		float color = (max-cVal+min);
-		const float maxColor = 100;
-		
-		
+
+	
 		short idx = mosaic.Map(x+PanelWidth*cPanel,y);
 
 		if (cVal > heartLite)
 		{
-			RgbColor clr2(yellow);
-			if (rand() % 2 )
-				clr2.Darken(rand()%30);
-			else
-				clr2.Lighten(rand()%20);
-			strip.SetPixelColor(idx, colorGamma.Correct(clr2));
+			//if (rand() % 2 )
+			{
+				RgbColor clr2(yellow);
+				if (rand() % 2 )
+					clr2.Darken(rand()%30);
+				else
+					clr2.Lighten(rand()%20);
+				strip.SetPixelColor(idx, colorGamma.Correct(clr2));
+			}
 		}
 		else
 		{
 			strip.SetPixelColor(idx, colorGamma.Correct(red));
 		}
-		
 		++read;
 		++x;
 	}
@@ -198,7 +185,7 @@ void loop()
 		}
 	}
 
-	cPanel =  (cPanel==0) ? 1:0;
+	cPanel = (cPanel == 0) ? 1: 0;
 
 	// WiFiClient client = server.available();
 	// if (client )
@@ -210,17 +197,17 @@ void loop()
 	// 	rest.handle(client);
 	// }
 
-	updateTimers();
-	myRA.addValue(delta);
-	if (varCount == updateVarDelay)
-	{
-		varCount=0;
-		averageCycleDelay = myRA.getFastAverage();
-	}
-	else
-	{
-		++varCount;
-	}
+	// updateTimers();
+	// myRA.addValue(delta);
+	// if (varCount == updateVarDelay)
+	// {
+	// 	varCount=0;
+	// 	averageCycleDelay = myRA.getFastAverage();
+	// }
+	// else
+	// {
+	// 	++varCount;
+	// }
 	
 	// serial_commands_.ReadSerial();
     strip.Show();
